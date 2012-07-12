@@ -1,0 +1,14 @@
+{
+  "name": "js-binarypack",
+  "version": "0.0.0",
+  "description": "BinaryPack serialization for the web browser",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/binaryjs/js-binarypack.git"
+  },
+  "author": "Eric Zhang",
+  "license": "MIT"
+}
