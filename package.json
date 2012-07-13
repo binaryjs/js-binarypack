@@ -10,6 +10,5 @@
     "type": "git",
     "url": "git://github.com/binaryjs/js-binarypack.git"
   },
-  "author": "Eric Zhang",
-  "license": "MIT"
+  "author": "Eric Zhang"
 }
