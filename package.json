@@ -2,6 +2,7 @@
   "name": "js-binarypack",
   "version": "0.0.0",
   "description": "BinaryPack serialization for the web browser",
+  "homepage": "https://github.com/binaryjs/js-binarypack",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
