@@ -15,10 +15,24 @@ exports.binaryFeatures = {
     } catch (e) {
       return true;
     }
+  })(),
+  supportsBinaryWebsockets: (function(){
+    try {
+      var wstest = new WebSocket('ws://localhost:0');
+      if (typeof(wstest.binaryType) !== "undefined") {
+        return true;
+      } else {
+        return false;
+      }
+      wstest.close();
+      wstest = null;
+    } catch (e) {
+      return false;
+    }
   })()
 };
 
-var BlobBuilder = window.WebKitBlobBuilder || window.MozBlobBuilder || window.MSBlobBuilder || window.BlobBuilder;
+exports.BlobBuilder = window.WebKitBlobBuilder || window.MozBlobBuilder || window.MSBlobBuilder || window.BlobBuilder;
 
 function BufferBuilder(){
   this._pieces = [];
