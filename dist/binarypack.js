@@ -342,7 +342,7 @@ Packer.prototype.pack = function(value){
         } else {
           this.pack_bin(value);
         }
-      } else if (Uint8Array.prototype.__proto__.isPrototypeOf(value) || constructor == Blob){
+      } else if ('BYTES_PER_ELEMENT' in value || constructor == Blob){
         if(binaryFeatures.useArrayBufferView) {
           this.pack_bin(value);
         } else {
