@@ -1,4 +1,4 @@
-/*! binarypack.js build:0.0.1, development. Copyright(c) 2012 Eric Zhang <eric@ericzhang.com> MIT Licensed */
+/*! binarypack.js build:0.0.2, development. Copyright(c) 2012 Eric Zhang <eric@ericzhang.com> MIT Licensed */
 (function(exports){
 exports.binaryFeatures = {
   useBlobBuilder: (function(){
@@ -400,7 +400,7 @@ Packer.prototype.pack_bin = function(blob){
 
 Packer.prototype.pack_string = function(str){
   var length = str.length;
-  if (length <= 0x1f){
+  if (length <= 0x0f){
     this.pack_uint8(0xb0 + length);
   } else if (length <= 0xffff){
     this.bufferBuilder.append(0xd8) ;
