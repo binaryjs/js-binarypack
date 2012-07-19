@@ -383,7 +383,7 @@ Packer.prototype.pack = function(value){
 
 Packer.prototype.pack_bin = function(blob){
   var length = blob.length || blob.byteLength || blob.size;
-  if (length <= 0x1f){
+  if (length <= 0x0f){
     this.pack_uint8(0xa0 + length);
   } else if (length <= 0xffff){
     this.bufferBuilder.append(0xda) ;
