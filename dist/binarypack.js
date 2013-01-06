@@ -401,7 +401,7 @@ Packer.prototype.pack_bin = function(blob){
 }
 
 Packer.prototype.pack_string = function(str){
-  var length = this._strByteLength(str.length);
+  var length = str.length;
   if (length <= 0x0f){
     this.pack_uint8(0xb0 + length);
   } else if (length <= 0xffff){
@@ -566,20 +566,4 @@ Packer.prototype.pack_int64 = function(num){
   this.bufferBuilder.append((low  & 0x000000ff));
 }
 
-Packer.prototype._strByteLength = function(str) {
-  var out = 0;
-  var code;
-  for(var i=0, ii = str.length; i < ii; i++) {
-    code = str.charCodeAt(i);
-    if(code < 256) {
-      out += 1;
-    } else if(code < 65536) {
-      out += 2;
-    } else {
-      out += 3;
-    }
-  }
-  return out;
-}
-    
 })(this);
