@@ -1,4 +1,4 @@
-/*! binarypack.js build:0.0.5, development. Copyright(c) 2012 Eric Zhang <eric@ericzhang.com> MIT Licensed */
+/*! binarypack.js build:0.0.6, development. Copyright(c) 2012 Eric Zhang <eric@ericzhang.com> MIT Licensed */
 (function(exports){
 var binaryFeatures = {};
 binaryFeatures.useBlobBuilder = (function(){
@@ -353,7 +353,7 @@ Packer.prototype.pack = function(value){
         }
       } else if ('BYTES_PER_ELEMENT' in value){
         if(binaryFeatures.useArrayBufferView) {
-          this.pack_bin(value);
+          this.pack_bin(new Uint8Array(value.buffer));
         } else {
           this.pack_bin(value.buffer);
         }

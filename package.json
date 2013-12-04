@@ -1,6 +1,6 @@
 {
   "name": "js-binarypack",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "BinaryPack serialization for the web browser",
   "homepage": "https://github.com/binaryjs/js-binarypack",
   "scripts": {
