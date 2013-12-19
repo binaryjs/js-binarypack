@@ -1,6 +1,6 @@
 {
   "name": "js-binarypack",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "BinaryPack serialization for the web browser",
   "homepage": "https://github.com/binaryjs/js-binarypack",
   "main": "./dist/binarypack.js",
@@ -11,5 +11,14 @@
     "type": "git",
     "url": "git://github.com/binaryjs/js-binarypack.git"
   },
-  "author": "Eric Zhang"
+  "author": "Eric Zhang",
+  "main": "index.js",
+  "bin": {
+    "js-binarypack": "build.js"
+  },
+  "dependencies": {
+    "uglify-js": "~1.3.4"
+  },
+  "devDependencies": {},
+  "license": "BSD"
 }
