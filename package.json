@@ -12,7 +12,7 @@
     "url": "git://github.com/binaryjs/js-binarypack.git"
   },
   "author": "Eric Zhang",
-  "main": "index.js",
+  "main": "./dist/binarypack.js",
   "bin": {
     "js-binarypack": "build.js"
   },
