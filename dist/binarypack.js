@@ -1,4 +1,4 @@
-/*! binarypack.js build:0.0.6, development. Copyright(c) 2012 Eric Zhang <eric@ericzhang.com> MIT Licensed */
+/*! binarypack.js build:0.0.7, development. Copyright(c) 2012 Eric Zhang <eric@ericzhang.com> MIT Licensed */
 (function(exports){
 var binaryFeatures = {};
 binaryFeatures.useBlobBuilder = (function(){
@@ -63,8 +63,8 @@ exports.BinaryPack = {
     var unpacker = new Unpacker(data);
     return unpacker.unpack();
   },
-  pack: function(data, utf8){
-    var packer = new Packer(utf8);
+  pack: function(data){
+    var packer = new Packer();
     packer.pack(data);
     var buffer = packer.getBuffer();
     return buffer;
@@ -309,8 +309,7 @@ Unpacker.prototype.read = function(length){
   }
 }
 
-function Packer(utf8){
-  this.utf8 = utf8;
+function Packer(){
   this.bufferBuilder = new BufferBuilder();
 }
 
@@ -392,13 +391,8 @@ Packer.prototype.pack_bin = function(blob){
 }
 
 Packer.prototype.pack_string = function(str){
-  var length;
-  if (this.utf8) {
-    var blob = new Blob([str]);
-    length = blob.size;
-  } else {
-    length = str.length;
-  }
+  var length = utf8Length(str);
+
   if (length <= 0x0f){
     this.pack_uint8(0xb0 + length);
   } else if (length <= 0xffff){
@@ -561,6 +555,20 @@ Packer.prototype.pack_int64 = function(num){
   this.bufferBuilder.append((low  & 0x00ff0000) >>> 16);
   this.bufferBuilder.append((low  & 0x0000ff00) >>>  8);
   this.bufferBuilder.append((low  & 0x000000ff));
+}
+
+function _utf8Replace(m){
+  var code = m.charCodeAt(0);
+
+  if(code <= 0x7ff) return '00';
+  if(code <= 0xffff) return '000';
+  if(code <= 0x1fffff) return '0000';
+  if(code <= 0x3ffffff) return '00000';
+  return '000000';
+}
+
+function utf8Length(str){
+  return str.replace(/[^\u0000-\u007F]/g, _utf8Replace).length;
 }
 
 })(this);
