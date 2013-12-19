@@ -583,7 +583,12 @@ function _utf8Replace(m){
 }
 
 function utf8Length(str){
-  return str.replace(/[^\u0000-\u007F]/g, _utf8Replace).length;
+  if (str.length > 600) {
+    // Blob method faster for large strings
+    return (new Blob([str])).size;
+  } else {
+    return str.replace(/[^\u0000-\u007F]/g, _utf8Replace).length;
+  }
 }
 
 })(this);
