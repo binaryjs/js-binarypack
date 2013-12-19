@@ -3,6 +3,7 @@
   "version": "0.0.7",
   "description": "BinaryPack serialization for the web browser",
   "homepage": "https://github.com/binaryjs/js-binarypack",
+  "main": "./dist/binarypack.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,7 +12,6 @@
     "url": "git://github.com/binaryjs/js-binarypack.git"
   },
   "author": "Eric Zhang",
-  "main": "index.js",
   "bin": {
     "js-binarypack": "build.js"
   },
