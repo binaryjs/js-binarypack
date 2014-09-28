@@ -1,10 +1,9 @@
 {
   "name": "js-binarypack",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "BinaryPack serialization for the web browser",
   "homepage": "https://github.com/binaryjs/js-binarypack",
   "main": "./lib/binarypack.js",
-
   "scripts": {
     "prepublish": "./node_modules/.bin/grunt",
     "test": "echo \"Error: no test specified\" && exit 1"
