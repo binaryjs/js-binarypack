@@ -1,4 +1,4 @@
-/*! binarypack.js build:0.0.8, production. Copyright(c) 2012 Eric Zhang <eric@ericzhang.com> MIT Licensed */(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/*! binarypack.js build:0.0.9, production. Copyright(c) 2012 Eric Zhang <eric@ericzhang.com> MIT Licensed */(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var BufferBuilder = require('./bufferbuilder').BufferBuilder;
 var binaryFeatures = require('./bufferbuilder').binaryFeatures;
 
@@ -537,25 +537,13 @@ binaryFeatures.useArrayBufferView = !binaryFeatures.useBlobBuilder && (function(
     return true;
   }
 })();
-binaryFeatures.supportsBinaryWebsockets = (function(){
-  try {
-    var wstest = new WebSocket('ws://null');
-    wstest.onerror = function(){};
-    if (typeof(wstest.binaryType) !== "undefined") {
-      return true;
-    } else {
-      return false;
-    }
-    wstest.close();
-    wstest = null;
-  } catch (e) {
-    return false;
-  }
-})();
 
 module.exports.binaryFeatures = binaryFeatures;
-var BlobBuilder = module.exports.BlobBuilder = window.WebKitBlobBuilder ||
-  window.MozBlobBuilder || window.MSBlobBuilder || window.BlobBuilder;
+var BlobBuilder = module.exports.BlobBuilder;
+if (typeof window != 'undefined') {
+  BlobBuilder = module.exports.BlobBuilder = window.WebKitBlobBuilder ||
+    window.MozBlobBuilder || window.MSBlobBuilder || window.BlobBuilder;
+}
 
 function BufferBuilder(){
   this._pieces = [];
