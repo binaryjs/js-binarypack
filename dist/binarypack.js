@@ -287,7 +287,7 @@ Packer.prototype.pack = function(value){
       var constructor = value.constructor;
       if (constructor == Array){
         this.pack_array(value);
-      } else if (constructor == Blob || constructor == File) {
+      } else if (constructor == Blob || constructor == File || value instanceof Blob || value instanceof File) {
         this.pack_bin(value);
       } else if (constructor == ArrayBuffer) {
         if(binaryFeatures.useArrayBufferView) {
