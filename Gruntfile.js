@@ -26,7 +26,7 @@ module.exports = function (grunt) {
     concat: {
       dev: {
         options: {
-          banner: '/*! binarypack.js build:<%= pkg.version %>, development. ' +
+          banner: '/*! binarypack.js build:<%= pkg.version %>, production. ' +
             'Copyright(c) 2012 Eric Zhang <eric@ericzhang.com> MIT Licensed */'
         },
         src: 'dist/binarypack.js',
