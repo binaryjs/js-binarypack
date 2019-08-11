@@ -1,12 +1,12 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
     browserify: {
       dev: {
         options: {
-          prepend: ['/*! binarypack.js build:<%= pkg.version %>, development. '+
-                    'Copyright(c) 2012 Eric Zhang <eric@ericzhang.com> MIT Licensed */']
+          prepend: ['/*! binarypack.js build:<%= pkg.version %>, development. ' +
+            'Copyright(c) 2012 Eric Zhang <eric@ericzhang.com> MIT Licensed */']
         },
         src: ['lib/exports.js'],
         dest: 'dist/binarypack.js'
@@ -16,8 +16,8 @@ module.exports = function(grunt) {
     uglify: {
       prod: {
         options: {
-          mangle: true, compress: true,
-                  },
+          mangle: true, compress: true
+        },
         src: 'dist/binarypack.js',
         dest: 'dist/binarypack.min.js'
       }
@@ -26,19 +26,19 @@ module.exports = function(grunt) {
     concat: {
       dev: {
         options: {
-          banner: '/*! binarypack.js build:<%= pkg.version %>, production. '+
+          banner: '/*! binarypack.js build:<%= pkg.version %>, development. ' +
             'Copyright(c) 2012 Eric Zhang <eric@ericzhang.com> MIT Licensed */'
         },
         src: 'dist/binarypack.js',
-        dest: 'dist/binarypack.js',
+        dest: 'dist/binarypack.js'
       },
       prod: {
         options: {
-          banner: '/*! binarypack.js build:<%= pkg.version %>, production. '+
+          banner: '/*! binarypack.js build:<%= pkg.version %>, production. ' +
             'Copyright(c) 2012 Eric Zhang <eric@ericzhang.com> MIT Licensed */'
         },
         src: 'dist/binarypack.min.js',
-        dest: 'dist/binarypack.min.js',
+        dest: 'dist/binarypack.min.js'
       }
     }
   });
@@ -48,4 +48,4 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-concat');
 
   grunt.registerTask('default', ['browserify', 'uglify', 'concat']);
-}
+};
