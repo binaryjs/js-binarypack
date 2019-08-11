@@ -1,5 +1,5 @@
 {
-  "name": "js-binarypack",
+  "name": "peerjs-js-binarypack",
   "version": "1.0.0",
   "description": "BinaryPack serialization for the web browser",
   "homepage": "https://github.com/peers/js-binarypack",
