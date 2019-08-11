@@ -1,0 +1,7 @@
+{
+    "standard.semistandard": true,
+    "standard.usePackageJson": true,
+    "standard.autoFixOnSave": true,
+    "javascript.validate.enable": false,
+    "eslint.autoFixOnSave": true
+}
