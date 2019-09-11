@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "description": "BinaryPack serialization for the web browser",
   "homepage": "https://github.com/peers/js-binarypack",
-  "main": "./lib/binarypack.min.js",
+  "main": "./lib/binarypack.js",
   "typings": "./index.d.ts",
   "scripts": {
     "prepublish": "./node_modules/.bin/grunt",
