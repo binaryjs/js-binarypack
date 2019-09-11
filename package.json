@@ -1,9 +1,10 @@
 {
   "name": "peerjs-js-binarypack",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "BinaryPack serialization for the web browser",
   "homepage": "https://github.com/peers/js-binarypack",
-  "main": "./lib/binarypack.js",
+  "main": "./lib/binarypack.min.js",
+  "typings": "./index.d.ts",
   "scripts": {
     "prepublish": "./node_modules/.bin/grunt",
     "test": "echo \"Error: no test specified\" && exit 1",
