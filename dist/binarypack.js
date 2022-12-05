@@ -192,19 +192,32 @@ Unpacker.prototype.unpack_string = function (size) {
 
   while (i < size) {
     c = bytes[i];
-    if (c < 128) {
-      str += String.fromCharCode(c);
+    // The length of a UTF-8 sequence is specified in the first byte:
+    // 0xxxxxxx means length 1,
+    // 110xxxxxx means length 2,
+    // 1110xxxx means length 3,
+    // 11110xxx means length 4.
+    // Non-initial bytes are always 10xxxxxx.
+    if (c < 0xa0) {
+      // One-byte sequence: bits 0xxxxxxx
+      code = c;
       i++;
-    } else if ((c ^ 0xc0) < 32) {
-      code = ((c ^ 0xc0) << 6) | (bytes[i + 1] & 63);
-      str += String.fromCharCode(code);
+    } else if ((c ^ 0xc0) < 0x20) {
+      // Two-byte sequence: bits 110xxxxx 10xxxxxx
+      code = ((c & 0x1f) << 6) | (bytes[i + 1] & 0x3f);
       i += 2;
-    } else {
-      code = ((c & 15) << 12) | ((bytes[i + 1] & 63) << 6) |
-        (bytes[i + 2] & 63);
-      str += String.fromCharCode(code);
+    } else if ((c ^ 0xe0) < 0x10) {
+      // Three-byte sequence: bits 1110xxxx 10xxxxxx 10xxxxxx
+      code = ((c & 0x0f) << 12) | (bytes[i + 1] & 0x3f) << 6 |
+        (bytes[i + 2] & 0x3f);
       i += 3;
+    } else {
+      // Four-byte sequence: bits 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+      code = ((c & 0x07) << 18) | (bytes[i + 1] & 0x3f) << 12 |
+        (bytes[i + 2] & 0x3f) << 6 | (bytes[i + 3] & 0x3f);
+      i += 4;
     }
+    str += String.fromCodePoint(code);
   }
 
   this.index += size;
@@ -504,7 +517,7 @@ Packer.prototype.pack_int64 = function (num) {
 };
 
 function _utf8Replace (m) {
-  var code = m.charCodeAt(0);
+  var code = m.codePointAt(0);
 
   if (code <= 0x7ff) return '00';
   if (code <= 0xffff) return '000';
@@ -518,7 +531,7 @@ function utf8Length (str) {
     // Blob method faster for large strings
     return (new Blob([str])).size;
   } else {
-    return str.replace(/[^\u0000-\u007F]/g, _utf8Replace).length;
+    return str.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]|[^\u0000-\u007F]/g, _utf8Replace).length;
   }
 }
 
