@@ -4,6 +4,8 @@ import commit_data from "./data.json";
 import { packAndUnpack } from "./util";
 
 describe("Binarypack", () => {
+	jest.setTimeout(20_000)
+
 	it("should keep objects intact", async () => {
 		const values = commit_data;
 		expect.assertions(values.length);
@@ -12,8 +14,6 @@ describe("Binarypack", () => {
 		}
 	});
 	it("should keep very large object intact", async () => {
-		jest.setTimeout(20_000)
-
 		const v: { [key: number]: number } = {};
 		for (let i = 0; i < 0xffff; i++) {
 			v[i] = i;
@@ -24,8 +24,6 @@ describe("Binarypack", () => {
 		expect(await packAndUnpack(commit_data)).toEqual(commit_data);
 	});
 	it("should keep empty and very large arrays intact", async () => {
-		jest.setTimeout(20_000)
-
 		const values = [[], Array(0xffff).fill(0)];
 		expect.assertions(values.length);
 		for (const v of values) {
