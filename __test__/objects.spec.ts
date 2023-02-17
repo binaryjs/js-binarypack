@@ -4,7 +4,7 @@ import commit_data from "./data.json";
 import { packAndUnpack } from "./util";
 
 describe("Binarypack", () => {
-	jest.setTimeout(20_000)
+	jest.setTimeout(20_000);
 
 	it("should keep objects intact", async () => {
 		const values = commit_data;
