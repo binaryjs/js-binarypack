@@ -1,4 +1,4 @@
-import { pack, unpack } from "../";
+import { pack, unpack } from "../lib/binarypack";
 
 // jsdom doesn't support Blob yet
 import "blob-polyfill";
