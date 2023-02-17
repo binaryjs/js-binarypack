@@ -8,7 +8,7 @@
   "scripts": {
     "prepublish": "./node_modules/.bin/grunt",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "format": "semistandard"
+    "format": "prettier --write ."
   },
   "repository": {
     "type": "git",
@@ -28,13 +28,8 @@
     "grunt-cli": "^1.3.2",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-uglify": "^4.0.1",
-    "semistandard": "^13.0.1",
+    "prettier": "^2.8.4",
     "uglifyjs": "^2.4.11"
-  },
-  "semistandard": {
-    "ignore": [
-      "/dist/"
-    ]
   },
   "license": "BSD"
 }
