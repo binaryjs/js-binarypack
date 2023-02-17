@@ -1,4 +1,4 @@
-import { BufferBuilder, binaryFeatures } from "./bufferbuilder";
+import { BufferBuilder } from "./bufferbuilder";
 
 export function unpack(data) {
 	const unpacker = new Unpacker(data);
@@ -7,13 +7,16 @@ export function unpack(data) {
 export function pack(data) {
 	const packer = new Packer();
 	packer.pack(data);
-	const buffer = packer.getBuffer();
-	return buffer;
+	return packer.getBuffer();
 }
 
 export default { pack, unpack };
 
 class Unpacker {
+	private index: number;
+	private readonly dataBuffer: any;
+	private readonly dataView: Uint8Array;
+	private readonly length: number;
 	constructor(data) {
 		// Data is ArrayBuffer
 		this.index = 0;
@@ -234,8 +237,7 @@ class Unpacker {
 		const map = {};
 		for (let i = 0; i < size; i++) {
 			const key = this.unpack();
-			const value = this.unpack();
-			map[key] = value;
+			map[key] = this.unpack();
 		}
 		return map;
 	}
@@ -269,6 +271,7 @@ class Unpacker {
 }
 
 class Packer {
+	private bufferBuilder: BufferBuilder;
 	constructor() {
 		this.bufferBuilder = new BufferBuilder();
 	}
@@ -310,17 +313,9 @@ class Packer {
 				) {
 					this.pack_bin(value);
 				} else if (constructor == ArrayBuffer) {
-					if (binaryFeatures.useArrayBufferView) {
-						this.pack_bin(new Uint8Array(value));
-					} else {
-						this.pack_bin(value);
-					}
+					this.pack_bin(new Uint8Array(value));
 				} else if ("BYTES_PER_ELEMENT" in value) {
-					if (binaryFeatures.useArrayBufferView) {
-						this.pack_bin(new Uint8Array(value.buffer));
-					} else {
-						this.pack_bin(value.buffer);
-					}
+					this.pack_bin(new Uint8Array(value.buffer));
 				} else if (
 					constructor == Object ||
 					constructor.toString().startsWith("class")
