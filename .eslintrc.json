@@ -1,6 +1,6 @@
 {
-    "extends": "semistandard",
-    "env": {
-        "browser": true
-    }
+	"extends": "semistandard",
+	"env": {
+		"browser": true
+	}
 }
