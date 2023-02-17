@@ -37,6 +37,14 @@ describe("Binarypack", () => {
 		expect(await packAndUnpack(undefined)).toEqual(undefined);
 	});
 
+	it("should transfer Uint8Array views correctly", async () => {
+		const arr = new Uint8Array(8);
+		for (let i = 0; i < 8; i++) arr[i] = i;
+		const v = new Uint8Array(arr.buffer, 4); // Half the array
+
+		expect(new Uint8Array(await packAndUnpack<ArrayBuffer>(v))).toEqual(v);
+	});
+
 	it("should transfer Uint8Array as ArrayBuffer", async () => {
 		const values = [
 			new Uint8Array(),
