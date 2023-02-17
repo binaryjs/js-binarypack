@@ -31,6 +31,9 @@ describe("Binarypack", () => {
 	it("should keep null", async () => {
 		expect(await packAndUnpack(null)).toEqual(null);
 	});
+	it("should keep undefined", async () => {
+		expect(await packAndUnpack(undefined)).toEqual(undefined);
+	});
 
 	it("should transfer Uint8Array as ArrayBuffer", async () => {
 		const values = [
