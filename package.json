@@ -37,5 +37,8 @@
 		"prettier": "^2.8.4",
 		"uglifyjs": "^2.4.11"
 	},
-	"license": "BSD"
+	"license": "BSD",
+	"engines": {
+		"node": ">= 14.0.0"
+	}
 }
