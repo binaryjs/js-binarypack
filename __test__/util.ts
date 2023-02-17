@@ -6,6 +6,5 @@ import "blob-polyfill";
 export const packAndUnpack = async <T>(data: T) => {
 	const encoded = pack(data);
 	const onTheWire = await encoded.arrayBuffer();
-	const decoded = unpack(onTheWire);
-	return decoded;
+	return unpack(onTheWire);
 };

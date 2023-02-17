@@ -1,7 +1,3 @@
 dist
-docs
-package-json.lock
+package-lock.json
 coverage
-
-# semantic-release
-CHANGELOG.md

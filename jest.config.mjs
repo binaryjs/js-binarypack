@@ -10,4 +10,5 @@ const config = {
 	collectCoverageFrom: ["./lib/**"],
 };
 
+// noinspection JSUnusedGlobalSymbols
 export default config;

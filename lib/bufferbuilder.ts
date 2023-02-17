@@ -17,7 +17,7 @@ class BufferBuilder {
 
 	flush() {
 		if (this._pieces.length > 0) {
-			let buf = new Uint8Array(this._pieces);
+			const buf = new Uint8Array(this._pieces);
 			this._parts.push(buf);
 			this._pieces = [];
 		}

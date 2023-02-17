@@ -10,6 +10,7 @@ export function pack(data) {
 	return packer.getBuffer();
 }
 
+// noinspection JSUnusedGlobalSymbols
 export default { pack, unpack };
 
 class Unpacker {

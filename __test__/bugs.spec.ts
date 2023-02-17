@@ -8,6 +8,7 @@ describe("Bugs", () => {
 			expect(await packAndUnpack(undefined)).toBe(null);
 		});
 		it("throws on empty Uint8Array", async () => {
+			// noinspection ES6MissingAwait
 			expect(packAndUnpack(new Uint8Array())).rejects.toThrowError(
 				"Invalid length",
 			);

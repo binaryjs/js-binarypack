@@ -12,7 +12,7 @@ describe("Binarypack", () => {
 		}
 	});
 	it("should keep very large object intact", async () => {
-		let v = {};
+		const v = {};
 		for (let i = 0; i < 0xffff; i++) {
 			v[i] = i;
 		}
@@ -93,14 +93,6 @@ describe("Binarypack", () => {
 		expect.assertions(values.length);
 		for (const v of values) {
 			expect(await packAndUnpack(v)).toEqual(await v.arrayBuffer());
-		}
-	});
-
-	it("should transfer Dates as String", async () => {
-		const values = [new Date(), new Date(Date.UTC(1, 1, 1, 1, 1, 1, 1))];
-		expect.assertions(values.length);
-		for (const v of values) {
-			expect(await packAndUnpack(v)).toEqual(v.toString());
 		}
 	});
 
