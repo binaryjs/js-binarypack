@@ -6,7 +6,8 @@
 	"main": "./lib/binarypack.js",
 	"typings": "./index.d.ts",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
+		"test": "jest",
+		"coverage": "jest --coverage",
 		"format": "prettier --write ."
 	},
 	"repository": {
@@ -15,6 +16,10 @@
 	},
 	"author": "Eric Zhang",
 	"devDependencies": {
+		"@swc/core": "^1.3.35",
+		"@swc/jest": "^0.2.24",
+		"@types/jest": "^29.4.0",
+		"blob-polyfill": "^7.0.20220408",
 		"eslint": "^6.1.0",
 		"eslint-config-semistandard": "^14.0.0",
 		"eslint-config-standard": "^13.0.1",
@@ -27,6 +32,8 @@
 		"grunt-cli": "^1.3.2",
 		"grunt-contrib-concat": "^1.0.1",
 		"grunt-contrib-uglify": "^4.0.1",
+		"jest": "^29.4.3",
+		"jest-environment-jsdom": "^29.4.3",
 		"prettier": "^2.8.4",
 		"uglifyjs": "^2.4.11"
 	},
