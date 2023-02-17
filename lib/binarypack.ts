@@ -1,32 +1,52 @@
 import { BufferBuilder } from "./bufferbuilder";
 
-export function unpack(data) {
+export type Packable =
+	| null
+	| undefined
+	| string
+	| number
+	| boolean
+	| Date
+	| Blob
+	| ArrayBuffer
+	| Array<Packable>
+	| { [key: string]: Packable }
+	| { BYTES_PER_ELEMENT: number; buffer: ArrayBuffer };
+export type Unpackable =
+	| null
+	| undefined
+	| string
+	| number
+	| boolean
+	| ArrayBuffer
+	| Array<Unpackable>
+	| { [key: string]: Unpackable };
+
+export function unpack<T extends Unpackable>(data: ArrayBuffer) {
 	const unpacker = new Unpacker(data);
-	return unpacker.unpack();
+	return unpacker.unpack() as T;
 }
-export function pack(data) {
+
+export function pack(data: Packable) {
 	const packer = new Packer();
 	packer.pack(data);
 	return packer.getBuffer();
 }
 
-// noinspection JSUnusedGlobalSymbols
-export default { pack, unpack };
-
 class Unpacker {
 	private index: number;
-	private readonly dataBuffer: any;
+	private readonly dataBuffer: ArrayBuffer;
 	private readonly dataView: Uint8Array;
 	private readonly length: number;
-	constructor(data) {
-		// Data is ArrayBuffer
+
+	constructor(data: ArrayBuffer) {
 		this.index = 0;
 		this.dataBuffer = data;
 		this.dataView = new Uint8Array(this.dataBuffer);
 		this.length = this.dataBuffer.byteLength;
 	}
 
-	unpack() {
+	unpack(): Unpackable {
 		const type = this.unpack_uint8();
 		if (type < 0x80) {
 			return type;
@@ -166,7 +186,7 @@ class Unpacker {
 		return uint64 < 2 ** 63 ? uint64 : uint64 - 2 ** 64;
 	}
 
-	unpack_raw(size) {
+	unpack_raw(size: number) {
 		if (this.length < this.index + size) {
 			throw new Error(
 				`BinaryPackFailure: index is out of range ${this.index} ${size} ${this.length}`,
@@ -175,12 +195,10 @@ class Unpacker {
 		const buf = this.dataBuffer.slice(this.index, this.index + size);
 		this.index += size;
 
-		// buf = util.bufferToString(buf);
-
 		return buf;
 	}
 
-	unpack_string(size) {
+	unpack_string(size: number) {
 		const bytes = this.read(size);
 		let i = 0;
 		let str = "";
@@ -226,18 +244,18 @@ class Unpacker {
 		return str;
 	}
 
-	unpack_array(size) {
-		const objects = new Array(size);
+	unpack_array(size: number) {
+		const objects = new Array<Unpackable>(size);
 		for (let i = 0; i < size; i++) {
 			objects[i] = this.unpack();
 		}
 		return objects;
 	}
 
-	unpack_map(size) {
-		const map = {};
+	unpack_map(size: number) {
+		const map: { [key: string]: Unpackable } = {};
 		for (let i = 0; i < size; i++) {
-			const key = this.unpack();
+			const key = this.unpack() as string;
 			map[key] = this.unpack();
 		}
 		return map;
@@ -261,7 +279,7 @@ class Unpacker {
 		return (sign === 0 ? 1 : -1) * frac;
 	}
 
-	read(length) {
+	read(length: number) {
 		const j = this.index;
 		if (j + length <= this.length) {
 			return this.dataView.subarray(j, j + length);
@@ -273,6 +291,7 @@ class Unpacker {
 
 class Packer {
 	private bufferBuilder: BufferBuilder;
+
 	constructor() {
 		this.bufferBuilder = new BufferBuilder();
 	}
@@ -281,63 +300,56 @@ class Packer {
 		return this.bufferBuilder.getBuffer();
 	}
 
-	pack(value) {
-		const type = typeof value;
-		if (type === "string") {
+	pack(value: Packable) {
+		if (typeof value === "string") {
 			this.pack_string(value);
-		} else if (type === "number") {
+		} else if (typeof value === "number") {
 			if (Math.floor(value) === value) {
 				this.pack_integer(value);
 			} else {
 				this.pack_double(value);
 			}
-		} else if (type === "boolean") {
+		} else if (typeof value === "boolean") {
 			if (value === true) {
 				this.bufferBuilder.append(0xc3);
 			} else if (value === false) {
 				this.bufferBuilder.append(0xc2);
 			}
-		} else if (type === "undefined") {
+		} else if (value === undefined) {
 			this.bufferBuilder.append(0xc0);
-		} else if (type === "object") {
+		} else if (typeof value === "object") {
 			if (value === null) {
 				this.bufferBuilder.append(0xc0);
 			} else {
 				const constructor = value.constructor;
-				if (constructor == Array) {
+				if (value instanceof Array) {
 					this.pack_array(value);
-				} else if (
-					constructor == Blob ||
-					constructor == File ||
-					value instanceof Blob ||
-					value instanceof File
-				) {
+				} else if (value instanceof Blob) {
 					this.pack_bin(value);
-				} else if (constructor == ArrayBuffer) {
+				} else if (value instanceof ArrayBuffer) {
 					this.pack_bin(new Uint8Array(value));
 				} else if ("BYTES_PER_ELEMENT" in value) {
-					this.pack_bin(new Uint8Array(value.buffer));
+					this.pack_bin(new Uint8Array(value.buffer as ArrayBuffer));
+				} else if (value instanceof Date) {
+					this.pack_string(value.toString());
 				} else if (
 					constructor == Object ||
 					constructor.toString().startsWith("class")
 				) {
 					this.pack_object(value);
-				} else if (constructor == Date) {
-					this.pack_string(value.toString());
-				} else if (typeof value.toBinaryPack === "function") {
-					this.bufferBuilder.append(value.toBinaryPack());
 				} else {
 					throw new Error(`Type "${constructor.toString()}" not yet supported`);
 				}
 			}
 		} else {
-			throw new Error(`Type "${type}" not yet supported`);
+			throw new Error(`Type "${typeof value}" not yet supported`);
 		}
 		this.bufferBuilder.flush();
 	}
 
-	pack_bin(blob) {
-		const length = blob.length || blob.byteLength || blob.size;
+	pack_bin(blob: Blob | Uint8Array) {
+		const length = blob instanceof Uint8Array ? blob.length : blob.size;
+
 		if (length <= 0x0f) {
 			this.pack_uint8(0xa0 + length);
 		} else if (length <= 0xffff) {
@@ -352,7 +364,7 @@ class Packer {
 		this.bufferBuilder.append(blob);
 	}
 
-	pack_string(str) {
+	pack_string(str: string) {
 		const length = utf8Length(str);
 
 		if (length <= 0x0f) {
@@ -369,7 +381,7 @@ class Packer {
 		this.bufferBuilder.append(str);
 	}
 
-	pack_array(ary) {
+	pack_array(ary: Packable[]) {
 		const length = ary.length;
 		if (length <= 0x0f) {
 			this.pack_uint8(0x90 + length);
@@ -387,7 +399,7 @@ class Packer {
 		}
 	}
 
-	pack_integer(num) {
+	pack_integer(num: number) {
 		if (num >= -0x20 && num <= 0x7f) {
 			this.bufferBuilder.append(num & 0xff);
 		} else if (num >= 0x00 && num <= 0xff) {
@@ -419,7 +431,7 @@ class Packer {
 		}
 	}
 
-	pack_double(num) {
+	pack_double(num: number) {
 		let sign = 0;
 		if (num < 0) {
 			sign = 1;
@@ -437,7 +449,7 @@ class Packer {
 		this.pack_int32(l32);
 	}
 
-	pack_object(obj) {
+	pack_object(obj: { [key: string]: Packable }) {
 		const keys = Object.keys(obj);
 		const length = keys.length;
 		if (length <= 0x0f) {
@@ -452,6 +464,7 @@ class Packer {
 			throw new Error("Invalid length");
 		}
 		for (const prop in obj) {
+			// eslint-disable-next-line no-prototype-builtins
 			if (obj.hasOwnProperty(prop)) {
 				this.pack(prop);
 				this.pack(obj[prop]);
@@ -459,16 +472,16 @@ class Packer {
 		}
 	}
 
-	pack_uint8(num) {
+	pack_uint8(num: number) {
 		this.bufferBuilder.append(num);
 	}
 
-	pack_uint16(num) {
+	pack_uint16(num: number) {
 		this.bufferBuilder.append(num >> 8);
 		this.bufferBuilder.append(num & 0xff);
 	}
 
-	pack_uint32(num) {
+	pack_uint32(num: number) {
 		const n = num & 0xffffffff;
 		this.bufferBuilder.append((n & 0xff000000) >>> 24);
 		this.bufferBuilder.append((n & 0x00ff0000) >>> 16);
@@ -476,7 +489,7 @@ class Packer {
 		this.bufferBuilder.append(n & 0x000000ff);
 	}
 
-	pack_uint64(num) {
+	pack_uint64(num: number) {
 		const high = num / 2 ** 32;
 		const low = num % 2 ** 32;
 		this.bufferBuilder.append((high & 0xff000000) >>> 24);
@@ -489,23 +502,23 @@ class Packer {
 		this.bufferBuilder.append(low & 0x000000ff);
 	}
 
-	pack_int8(num) {
+	pack_int8(num: number) {
 		this.bufferBuilder.append(num & 0xff);
 	}
 
-	pack_int16(num) {
+	pack_int16(num: number) {
 		this.bufferBuilder.append((num & 0xff00) >> 8);
 		this.bufferBuilder.append(num & 0xff);
 	}
 
-	pack_int32(num) {
+	pack_int32(num: number) {
 		this.bufferBuilder.append((num >>> 24) & 0xff);
 		this.bufferBuilder.append((num & 0x00ff0000) >>> 16);
 		this.bufferBuilder.append((num & 0x0000ff00) >>> 8);
 		this.bufferBuilder.append(num & 0x000000ff);
 	}
 
-	pack_int64(num) {
+	pack_int64(num: number) {
 		const high = Math.floor(num / 2 ** 32);
 		const low = num % 2 ** 32;
 		this.bufferBuilder.append((high & 0xff000000) >>> 24);
@@ -519,8 +532,8 @@ class Packer {
 	}
 }
 
-function _utf8Replace(m) {
-	const code = m.codePointAt(0);
+function _utf8Replace(m: string) {
+	const code = m.codePointAt(0)!;
 
 	if (code <= 0x7ff) return "00";
 	if (code <= 0xffff) return "000";
@@ -529,12 +542,13 @@ function _utf8Replace(m) {
 	return "000000";
 }
 
-function utf8Length(str) {
+function utf8Length(str: string) {
 	if (str.length > 600) {
 		// Blob method faster for large strings
 		return new Blob([str]).size;
 	} else {
 		return str.replace(
+			// eslint-disable-next-line no-control-regex
 			/[\ud800-\udbff][\udc00-\udfff]|[^\u0000-\u007f]/g,
 			_utf8Replace,
 		).length;

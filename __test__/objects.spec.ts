@@ -12,7 +12,7 @@ describe("Binarypack", () => {
 		}
 	});
 	it("should keep very large object intact", async () => {
-		const v = {};
+		const v: { [key: number]: number } = {};
 		for (let i = 0; i < 0xffff; i++) {
 			v[i] = i;
 		}
@@ -34,6 +34,7 @@ describe("Binarypack", () => {
 
 	it("should transfer Uint8Array as ArrayBuffer", async () => {
 		const values = [
+			new Uint8Array(),
 			new Uint8Array([0]),
 			new Uint8Array([0, 1, 2, 3, 4, 6, 7]),
 			new Uint8Array([0, 1, 2, 3, 4, 6, 78, 9, 10, 11, 12, 13, 14, 15]),
@@ -44,7 +45,7 @@ describe("Binarypack", () => {
 		];
 		expect.assertions(values.length);
 		for (const v of values) {
-			expect(new Uint8Array(await packAndUnpack(v))).toEqual(v);
+			expect(new Uint8Array(await packAndUnpack<ArrayBuffer>(v))).toEqual(v);
 		}
 	});
 
@@ -64,7 +65,7 @@ describe("Binarypack", () => {
 		];
 		expect.assertions(values.length);
 		for (const v of values) {
-			expect(new Int32Array(await packAndUnpack(v))).toEqual(v);
+			expect(new Int32Array(await packAndUnpack<ArrayBuffer>(v))).toEqual(v);
 		}
 	});
 
@@ -80,7 +81,7 @@ describe("Binarypack", () => {
 		];
 		expect.assertions(values.length);
 		for (const v of values) {
-			expect(await packAndUnpack(v)).toEqual(v);
+			expect(await packAndUnpack<ArrayBuffer>(v)).toEqual(v);
 		}
 	});
 

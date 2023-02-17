@@ -1,12 +1,12 @@
 class BufferBuilder {
-	private _pieces: any[];
-	private readonly _parts: any[];
+	private _pieces: number[];
+	private readonly _parts: BlobPart[];
 	constructor() {
 		this._pieces = [];
 		this._parts = [];
 	}
 
-	append(data) {
+	append(data: number | BlobPart) {
 		if (typeof data === "number") {
 			this._pieces.push(data);
 		} else {

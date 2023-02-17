@@ -7,12 +7,6 @@ describe("Bugs", () => {
 		it("replaces undefined with null ", async () => {
 			expect(await packAndUnpack(undefined)).toBe(null);
 		});
-		it("throws on empty Uint8Array", async () => {
-			// noinspection ES6MissingAwait
-			expect(packAndUnpack(new Uint8Array())).rejects.toThrowError(
-				"Invalid length",
-			);
-		});
 	});
 	describe("Numbers", () => {
 		it("gives back wrong value on INT64_MAX ", async () => {
