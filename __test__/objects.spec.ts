@@ -98,18 +98,6 @@ describe("Binarypack", () => {
 		}
 	});
 
-	it("should transfer Blobs as ArrayBuffer", async () => {
-		const values = [
-			new Blob(),
-			new Blob(["test"]),
-			new Blob(["test", "test", "test", "test", "test"]),
-		];
-		expect.assertions(values.length);
-		for (const v of values) {
-			expect(await packAndUnpack(v)).toEqual(await v.arrayBuffer());
-		}
-	});
-
 	it("should transfer Dates as String", async () => {
 		const values = [new Date(), new Date(Date.UTC(1, 1, 1, 1, 1, 1, 1))];
 		expect.assertions(values.length);

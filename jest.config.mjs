@@ -8,6 +8,7 @@ const config = {
 		// "node_modules"
 	],
 	collectCoverageFrom: ["./lib/**"],
+	setupFilesAfterEnv: ["./jest.setup.cjs"],
 };
 
 // noinspection JSUnusedGlobalSymbols
