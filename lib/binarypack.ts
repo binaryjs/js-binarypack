@@ -312,7 +312,7 @@ export class Packer {
 				this._bufferBuilder.append(0xc2);
 			}
 		} else if (value === undefined) {
-			this._bufferBuilder.append(0xc1);
+			this._bufferBuilder.append(0xc0);
 		} else if (typeof value === "object") {
 			if (value === null) {
 				this._bufferBuilder.append(0xc0);

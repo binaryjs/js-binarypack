@@ -31,9 +31,6 @@ describe("Binarypack", () => {
 	it("should keep null", async () => {
 		expect(await packAndUnpack(null)).toEqual(null);
 	});
-	it("should keep undefined", async () => {
-		expect(await packAndUnpack(undefined)).toEqual(undefined);
-	});
 
 	it("should transfer Uint8Array views correctly", async () => {
 		const arr = new Uint8Array(8);
