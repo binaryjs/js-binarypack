@@ -82,6 +82,7 @@ describe("Binarypack", () => {
 
 	it("should keep ArrayBuffers", async () => {
 		const values = [
+			new Uint8Array([]).buffer,
 			new Uint8Array([0]).buffer,
 			new Uint8Array([0, 1, 2, 3, 4, 6, 7]).buffer,
 			new Uint8Array([0, 1, 2, 3, 4, 6, 78, 9, 10, 11, 12, 13, 14, 15]).buffer,
