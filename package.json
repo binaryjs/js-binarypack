@@ -1,6 +1,6 @@
 {
 	"name": "peerjs-js-binarypack",
-	"version": "1.0.1",
+	"version": "2.0.0",
 	"description": "BinaryPack serialization",
 	"homepage": "https://github.com/peers/js-binarypack",
 	"main": "dist/binarypack.cjs",
