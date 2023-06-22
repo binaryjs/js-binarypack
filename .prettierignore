@@ -1,0 +1,6 @@
+dist
+package-lock.json
+coverage
+
+# semantic-release
+CHANGELOG.md
