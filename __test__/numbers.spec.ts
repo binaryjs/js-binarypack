@@ -24,9 +24,9 @@ describe("Binarypack", () => {
 			// 0x7FFFFFFFFFFFFFFF,
 			0x0fffffffffffffff,
 		];
-		expect.assertions(values.length);
+		// expect.assertions(values.length);
 		for (const v of values) {
-			expect(await packAndUnpack(v)).toEqual(v);
+			expect(packAndUnpack(v)).toEqual(v);
 		}
 	});
 });

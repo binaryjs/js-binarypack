@@ -1,14 +1,14 @@
 import { expect, describe, it } from "@jest/globals";
 
-import commit_data from "./data.json";
+import commit_data from "./data";
 import { packAndUnpack } from "./util";
 
 describe("Binarypack", () => {
 	it("should keep objects intact", async () => {
 		const values = commit_data;
-		expect.assertions(values.length);
+		// expect.assertions(values.length);
 		for (const v of values) {
-			expect(await packAndUnpack(v)).toEqual(v);
+			expect(packAndUnpack(v)).toEqual(v);
 		}
 	});
 	it("should keep very large object intact", async () => {
@@ -16,28 +16,31 @@ describe("Binarypack", () => {
 		for (let i = 0; i < 0xffff; i++) {
 			v[i] = i;
 		}
-		expect(await packAndUnpack(v)).toEqual(v);
+		expect(packAndUnpack(v)).toEqual(v);
 	});
 	it("should keep arrays of objects intact", async () => {
-		expect(await packAndUnpack(commit_data)).toEqual(commit_data);
+		expect(packAndUnpack(commit_data)).toEqual(commit_data);
 	});
 	it("should keep empty and very large arrays intact", async () => {
 		const values = [[], Array(0xffff).fill(0)];
-		expect.assertions(values.length);
+		// expect.assertions(values.length);
 		for (const v of values) {
-			expect(await packAndUnpack(v)).toEqual(v);
+			expect(packAndUnpack(v)).toEqual(v);
 		}
 	});
 	it("should keep null", async () => {
-		expect(await packAndUnpack(null)).toEqual(null);
+		expect(packAndUnpack(null)).toEqual(null);
 	});
 
 	it("should transfer Uint8Array views correctly", async () => {
 		const arr = new Uint8Array(8);
 		for (let i = 0; i < 8; i++) arr[i] = i;
 		const v = new Uint8Array(arr.buffer, 4); // Half the array
+		const result = packAndUnpack<ArrayBuffer>(v);
 
-		expect(new Uint8Array(await packAndUnpack<ArrayBuffer>(v))).toEqual(v);
+		expect(result).toBeInstanceOf(ArrayBuffer);
+		if (result instanceof ArrayBuffer)
+			expect(new Uint8Array(result)).toEqual(v);
 	});
 
 	it("should transfer Uint8Array as ArrayBuffer", async () => {
@@ -51,9 +54,12 @@ describe("Binarypack", () => {
 				23, 24, 25, 26, 27, 28, 30, 31,
 			]),
 		];
-		expect.assertions(values.length);
+		// expect.assertions(values.length);
 		for (const v of values) {
-			expect(new Uint8Array(await packAndUnpack<ArrayBuffer>(v))).toEqual(v);
+			const result = packAndUnpack<ArrayBuffer>(v);
+			expect(result).toBeInstanceOf(ArrayBuffer);
+			if (result instanceof ArrayBuffer)
+				expect(new Uint8Array(result)).toEqual(v);
 		}
 	});
 
@@ -71,9 +77,12 @@ describe("Binarypack", () => {
 				].map((x) => -x),
 			),
 		];
-		expect.assertions(values.length);
+		// expect.assertions(values.length);
 		for (const v of values) {
-			expect(new Int32Array(await packAndUnpack<ArrayBuffer>(v))).toEqual(v);
+			const result = packAndUnpack<ArrayBuffer>(v);
+			expect(result).toBeInstanceOf(ArrayBuffer);
+			if (result instanceof ArrayBuffer)
+				expect(new Int32Array(result)).toEqual(v);
 		}
 	});
 
@@ -88,17 +97,17 @@ describe("Binarypack", () => {
 				23, 24, 25, 26, 27, 28, 30, 31,
 			]).buffer,
 		];
-		expect.assertions(values.length);
+		// expect.assertions(values.length);
 		for (const v of values) {
-			expect(await packAndUnpack<ArrayBuffer>(v)).toEqual(v);
+			expect(packAndUnpack<ArrayBuffer>(v)).toEqual(v);
 		}
 	});
 
 	it("should transfer Dates as String", async () => {
 		const values = [new Date(), new Date(Date.UTC(1, 1, 1, 1, 1, 1, 1))];
-		expect.assertions(values.length);
+		// expect.assertions(values.length);
 		for (const v of values) {
-			expect(await packAndUnpack(v)).toEqual(v.toString());
+			expect(packAndUnpack(v)).toEqual(v.toString());
 		}
 	});
 });

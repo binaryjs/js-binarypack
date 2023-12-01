@@ -8,6 +8,7 @@ export type Packable =
 	| boolean
 	| Date
 	| ArrayBuffer
+	| Blob
 	| Array<Packable>
 	| { [key: string]: Packable }
 	| ({ BYTES_PER_ELEMENT: number } & ArrayBufferView);
@@ -28,7 +29,10 @@ export function unpack<T extends Unpackable>(data: ArrayBuffer) {
 
 export function pack(data: Packable) {
 	const packer = new Packer();
-	packer.pack(data);
+	const res = packer.pack(data);
+	if (res instanceof Promise) {
+		return res.then(() => packer.getBuffer());
+	}
 	return packer.getBuffer();
 }
 
@@ -319,7 +323,10 @@ export class Packer {
 			} else {
 				const constructor = value.constructor;
 				if (value instanceof Array) {
-					this.pack_array(value);
+					const res = this.pack_array(value);
+					if (res instanceof Promise) {
+						return res.then(() => this._bufferBuilder.flush());
+					}
 				} else if (value instanceof ArrayBuffer) {
 					this.pack_bin(new Uint8Array(value));
 				} else if ("BYTES_PER_ELEMENT" in value) {
@@ -327,11 +334,20 @@ export class Packer {
 					this.pack_bin(new Uint8Array(v.buffer, v.byteOffset, v.byteLength));
 				} else if (value instanceof Date) {
 					this.pack_string(value.toString());
+				} else if (value instanceof Blob) {
+					return value.arrayBuffer().then((buffer) => {
+						this.pack_bin(new Uint8Array(buffer));
+						this._bufferBuilder.flush();
+					});
+					// this.pack_bin(new Uint8Array(await value.arrayBuffer()));
 				} else if (
 					constructor == Object ||
 					constructor.toString().startsWith("class")
 				) {
-					this.pack_object(value);
+					const res = this.pack_object(value);
+					if (res instanceof Promise) {
+						return res.then(() => this._bufferBuilder.flush());
+					}
 				} else {
 					throw new Error(`Type "${constructor.toString()}" not yet supported`);
 				}
@@ -390,9 +406,18 @@ export class Packer {
 		} else {
 			throw new Error("Invalid length");
 		}
-		for (let i = 0; i < length; i++) {
-			this.pack(ary[i]);
-		}
+
+		const packNext = (index: number): Promise<void> | void => {
+			if (index < length) {
+				const res = this.pack(ary[index]);
+				if (res instanceof Promise) {
+					return res.then(() => packNext(index + 1));
+				}
+				return packNext(index + 1);
+			}
+		};
+
+		return packNext(0);
 	}
 
 	pack_integer(num: number) {
@@ -459,13 +484,23 @@ export class Packer {
 		} else {
 			throw new Error("Invalid length");
 		}
-		for (const prop in obj) {
-			// eslint-disable-next-line no-prototype-builtins
-			if (obj.hasOwnProperty(prop)) {
-				this.pack(prop);
-				this.pack(obj[prop]);
+
+		const packNext = (index: number): Promise<void> | void => {
+			if (index < keys.length) {
+				const prop = keys[index];
+				// eslint-disable-next-line no-prototype-builtins
+				if (obj.hasOwnProperty(prop)) {
+					this.pack(prop);
+					const res = this.pack(obj[prop]);
+					if (res instanceof Promise) {
+						return res.then(() => packNext(index + 1));
+					}
+				}
+				return packNext(index + 1);
 			}
-		}
+		};
+
+		return packNext(0);
 	}
 
 	pack_uint8(num: number) {
